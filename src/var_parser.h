@@ -72,10 +72,11 @@ static bool varParserV1(
             //当遇到右括号，将不断弹出栈中内容到buffer，直到弹出左括号停止。如果直到栈空也未遇到左括号，则解析失败
             buffer.clear();
             while (!character.empty()) {
-                auto characterTop = character.top();
+                auto [topChar, topType] = character.top();
+
                 character.pop();
 
-                if (characterTop.type == CharacterTypes::LeftBracket) {
+                if (topType == CharacterTypes::LeftBracket) {
                     //遭遇左括号，调用回调取得变量解析结果
                     leftBracketExists = true;
 
@@ -100,7 +101,7 @@ static bool varParserV1(
                     break;
                 }
 
-                buffer.push_back(characterTop.ch);
+                buffer.push_back(topChar);
             }
 
             //遇到了右括号，但在这之前并无左括号，解析错误
