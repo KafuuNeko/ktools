@@ -57,9 +57,9 @@ static bool varParserV1(
     std::vector<char> buffer;
     std::stack<Character> character;
 
-    for (auto inIt = first; inIt != last; ++inIt) {
+    for (auto inputIterator = first; inputIterator != last; ++inputIterator) {
 
-        auto element = *inIt;
+        auto element = *inputIterator;
 
         if (element == leftBracket) {
             character.push(Character { element, CharacterTypes::LeftBracket });
@@ -113,11 +113,11 @@ static bool varParserV1(
         }
 
         if (element == '\\') {
-            ++inIt;
-            if (inIt == last) {
+            ++inputIterator;
+            if (inputIterator == last) {
                 return false;
             }
-            element = characterEscaping(*inIt);
+            element = characterEscaping(*inputIterator);
         }
 
         character.push(Character { element, CharacterTypes::Normal });

@@ -14,7 +14,7 @@ EXPORT_API(bool, var_parser_v1, (parameterSizeof<cstr_t>()))
 {
     std::string temp;
 
-    auto r = varParserV1(
+    auto success = varParserV1(
         input, input + strlen(input), std::back_insert_iterator(temp), [param, callback](const std::string& var, std::string& rt) {
             std::unique_ptr<const char[]> rb(callback(var.c_str(), param));
 
@@ -26,9 +26,9 @@ EXPORT_API(bool, var_parser_v1, (parameterSizeof<cstr_t>()))
         },
         leftBracket, rightBracket);
 
-    if (r) {
+    if (success) {
         *output = newCstr(temp);
     }
 
-    return r;
+    return success;
 }

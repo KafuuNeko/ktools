@@ -11,24 +11,6 @@ using HashMapT = std::unordered_map<_Key, _Value>;
 using StringMapT = HashMapT<std::string, std::string>;
 using StringMapPtr = StringMapT*;
 
-EXPORT_API(int32_t, string_hash_i32, (parameterSizeof<cstr_t>()))
-(cstr_t str)
-{
-    /*
-    uint32_t hashValue = 0;
-
-    while(*str != '\0')
-    {
-        hashValue = hashValue * 31 + *str;
-        str++;
-    }
-
-    return static_cast<int32_t>(hashValue);
-    */
-    auto hashValue = std::hash<std::string>()(str) % (static_cast<uint32_t>(-1) >> 1);
-    return static_cast<int32_t>(hashValue);
-}
-
 EXPORT_API(StringMapPtr, new_string_map, 0)
 ()
 {
