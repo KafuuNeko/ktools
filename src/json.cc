@@ -2,13 +2,39 @@
 #include "basic.hpp"
 #include "def_export.hpp"
 #include <corecrt.h>
+#include <iterator>
+#include <limits>
 #include <sstream>
 #include <stdint.h>
 #include <string>
 
 using JsonPtr = nlohmann::json*;
 
-static const char * kLastError = "null";
+static const char* kLastError = "null";
+
+struct StringVector {
+    int32_t size;
+    cstr_t* vec;
+};
+
+using StringVectorPtr = StringVector*;
+
+EXPORT_API(void, json_free_vector, (parameterSizeof<StringVectorPtr>()))
+(StringVectorPtr ptr)
+{
+    if (ptr) {
+        if (ptr->vec) {
+            for (size_t i = 0; i < ptr->size; ++i) {
+                if (ptr->vec[i]) {
+                    delete[] ptr->vec[i];
+                }
+            }
+            delete[] ptr->vec;
+        }
+        ptr->vec = nullptr;
+        ptr->size = 0;
+    }
+}
 
 EXPORT_API(JsonPtr, json_new, 0)
 ()
@@ -20,7 +46,7 @@ EXPORT_API(JsonPtr, json_parse, (parameterSizeof<cstr_t>()))
 (cstr_t text)
 {
     try {
-        return new nlohmann::json ( nlohmann::json::parse(text) );
+        return new nlohmann::json(nlohmann::json::parse(text));
     } catch (nlohmann::json::exception& e) {
         kLastError = e.what();
         return nullptr;
@@ -335,8 +361,25 @@ EXPORT_API(void, json_remove_by_key, (parameterSizeof<json_ptr, cstr_t>()))
     }
 }
 
-EXPORT_API(cstr_t, json_last_error, 0)()
+EXPORT_API(void, json_get_keys, (parameterSizeof<json_ptr>()))
+(JsonPtr json, StringVectorPtr vector)
+{
+    if (!json || !json->is_object()) {
+        return;
+    }
+
+    auto itemsIterator = json->items();
+    auto distance = std::distance(itemsIterator.begin(), itemsIterator.end());
+    *vector = StringVector { distance, new cstr_t[distance] };
+
+    size_t index = 0;
+    for (auto& item : itemsIterator) {
+        vector->vec[index++] = newCstr(item.key());
+    }
+}
+
+EXPORT_API(cstr_t, json_last_error, 0)
+()
 {
     return kLastError;
 }
-
