@@ -5,6 +5,9 @@
 EXPORT_API(cstr_t, new_string, (parameterSizeof<cstr_t>()))
 (cstr_t str)
 {
+    if (!str) {
+        return newCstr("");
+    }
     return newCstr(str);
 }
 

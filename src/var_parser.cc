@@ -6,7 +6,6 @@
 #include <string.h>
 #include <string>
 
-
 typedef cstr_t (*__stdcall CallbackT)(cstr_t, void*);
 
 EXPORT_API(bool, var_parser_v1, (parameterSizeof<cstr_t>()))
@@ -15,7 +14,10 @@ EXPORT_API(bool, var_parser_v1, (parameterSizeof<cstr_t>()))
     std::string temp;
 
     auto success = varParserV1(
-        input, input + strlen(input), std::back_insert_iterator(temp), [param, callback](const std::string& var, std::string& rt) {
+        input,
+        input + strlen(input),
+        std::back_insert_iterator(temp),
+        [param, callback](const std::string& var, std::string& rt) {
             std::unique_ptr<const char[]> rb(callback(var.c_str(), param));
 
             if (rb) {
